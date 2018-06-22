@@ -1,9 +1,10 @@
-{% extends 'posts/base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
 <h1>Post List</h1>
-
 {% for post in posts %}
-<a href="{% url 'post-detail' post.id %}"><img src="../media/{{ post.photo }}" alt="" width="300" height="300"></a>
+<p>
+    <a href="{% url 'posts:post-detail' post.id %}"><img src="../media/{{ post.photo }}" alt="" width="300" height="300"></a>
+</p>
 {% endfor %}
 {% endblock %}
