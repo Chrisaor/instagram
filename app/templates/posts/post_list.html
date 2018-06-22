@@ -3,8 +3,12 @@
 {% block content %}
 <h1>Post List</h1>
 {% for post in posts %}
-<p>
-    <a href="{% url 'posts:post-detail' post.id %}"><img src="../media/{{ post.photo }}" alt="" width="300" height="300"></a>
-</p>
+
+<div>
+    <p>{{ post.author.username }}</p>
+    <p><a href="{% url 'posts:post-detail' post.id %}"><img src="{{ post.photo.url }}" alt="" width="100%"></a>
+
+    </p>
+</div>
 {% endfor %}
 {% endblock %}

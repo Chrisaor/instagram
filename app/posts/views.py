@@ -4,9 +4,6 @@ from django.shortcuts import render, redirect
 from posts.models import Post
 
 
-def index(request):
-    return redirect('posts:post-list')
-
 def post_list(request):
     posts = Post.objects.all()
     context = {
