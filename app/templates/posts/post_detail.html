@@ -1,0 +1,11 @@
+{% extends 'posts/base.html' %}
+
+{% block content %}
+<h1>Post Detail</h1>
+
+<p>{{ post.photo }}</p>
+<p>{{ post.author }}</p>
+<p>{{ post.content }}</p>
+
+<a href="{% url 'post-list' %}">뒤로가기</a>
+{% endblock %}
