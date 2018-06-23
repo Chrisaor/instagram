@@ -10,6 +10,20 @@
 <body>
 <div>
     <h1>Instagram</h1>
+    <div>
+        {% if user.is_authenticated %}
+        <p> {{ user }}님이 로그인 되었습니다.
+        <form action="{% url 'members:logout' %}" method="POST">
+        {% csrf_token %}
+        <button type="submit">로그아웃하기</button>
+    </form></p>
+        {% else %}
+        <a href="{% url 'members:login' %}">
+            <button>로그인하기</button></a>
+        <a href="{% url 'members:signup' %}"><button>회원가입</button>
+    </a>
+        {% endif %}
+    </div>
     {% block content %}
     {% endblock %}
 </div>

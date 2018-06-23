@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    {% if messages %}
+        {%  for message in messages %}
+            {{  message }}
+        {% endfor %}
+    {% endif %}
+<div>
+    <form action="" method="POST">
+        {% csrf_token %}
+            <p><label for="">이름 </label><input type="text" name="username"></p>
+            <p><label for="">패스워드</label><input type="password" name="password1"></p>
+            <p><label for="">패스워드 확인</label><input type="password" name="password2"></p>
+
+            <p><label for="">이메일 </label><input type="text" name="email"></p>
+            <p><label for="">핸드폰</label><input tye="text" name="phone_no"></p>
+            <p>
+                <button type="submit">가입하기</button>
+            </p>
+    </form>
+</div>
+{% endblock %}
