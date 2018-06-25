@@ -6,15 +6,20 @@
             {{  message }}
         {% endfor %}
     {% endif %}
+<ul>
+    {% for error in errors %}
+       <li>{{  error }}</li>
+    {% endfor %}
+</ul>
 <div>
     <form action="" method="POST">
         {% csrf_token %}
-            <p><label for="">이름 </label><input type="text" name="username"></p>
-            <p><label for="">패스워드</label><input type="password" name="password1"></p>
+            <p><label for="">이름 </label><input type="text" name="username" value="{{ username }}"></p>
+            <p><label for="">패스워드</label><input type="password" name="password" value=""></p>
             <p><label for="">패스워드 확인</label><input type="password" name="password2"></p>
 
-            <p><label for="">이메일 </label><input type="text" name="email"></p>
-            <p><label for="">핸드폰</label><input tye="text" name="phone_no"></p>
+            <p><label for="">이메일 </label><input type="text" name="email" value="{{ email }}"></p>
+            <p><label for="">핸드폰</label><input tye="text" name="phone_no" value="{{ phone_no }}"></p>
             <p>
                 <button type="submit">가입하기</button>
             </p>
