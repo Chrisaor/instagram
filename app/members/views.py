@@ -1,122 +1,120 @@
-from django.contrib import messages
-from django.contrib.auth import authenticate, logout, get_user_model
-from django.contrib.auth.models import User
-from django.contrib.auth.views import login
-from django.http import HttpResponse, HttpResponseRedirect
+from django.contrib.auth import authenticate, login, get_user_model, logout
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 
-# User클래스 자체를 가져올 때는 get_user_model()
-# ForeignKey에 User모델을 지정할 때는 settings.AUTH_USER_MODEL
-
+# User클래스 자체를 가져올때는 get_user_model()
+# ForeignKey에 User모델을 지정할때는 settings.AUTH_USER_MODEL
 User = get_user_model()
 
+
 def login_view(request):
-    # 1. member.urls <= 'members/'로 include되도록 config.urls모듈에 추가
-    # 2. path 구현 (URL : '/members/login/')
+    # 1. member.urls <- 'members/'로 include되도록 config.urls모듈에 추가
+    # 2. path구현 (URL: '/members/login/')
     # 3. path와 이 view연결
     # 4. 일단 잘 나오는지 확인
-    # 5. 잘 나오면 form 작성
-    # 6. POST방식 요청 보내서 request.POST에 요청이 잘 왔는지 확인
-    # 7. 받은 username, password값을  HttpResponse에 보여줌
+    # 5. 잘 나오면 form을 작성 (username, password를 받는 input2개)
+    #   templates/members/login.html에 작성
+
+    # 6. form작성후에는 POST방식 요청을 보내서 이 뷰에서 request.POST에 요청이 잘 왔는지 확인
+    # 7. 일단은 받은 username, password값을 HttpResponse에 보여주도록 한다.
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
-        # print(request.POST)
-        # print(username)
-        # print(password)
-        # result = ''
-        # result += f'ID : {username}\n'
-        # result += f'PW : {str(password)}\n'
-        # return HttpResponse(result)
+        print(request.user.is_authenticated)
+        # 받은 username과 password에 해당하는 User가 있는지 인증
         user = authenticate(request, username=username, password=password)
-        print(user)
+
+        # 인증에 성공한 경우
         if user is not None:
-            print('로그인 전', request.user.is_authenticated)
+            # 세션값을 만들어 DB에 저장하고, HTTP response의 Cookie에 해당값을 담아보내도록 하는
+            # login()함수를 실행한다
             login(request, user)
-            print('로그인 후', request.user.is_authenticated)
+            print(request.user.is_authenticated)
+            # 이후 post-list로 redirect
             return redirect('posts:post-list')
+        # 인증에 실패한 경우 (username또는 password가 틀린 경우)
         else:
+            # 다시 로그인 페이지로 redirect
             return redirect('members:login')
+    # GET 요청일 경우
     else:
+        # form이 있는 template을 보여준다
         return render(request, 'members/login.html')
 
+
 def logout_view(request):
-    if request.method == 'POST':
-        logout(request)
-        print('로그아웃!')
-        return redirect('index')
+    logout(request)
+    return redirect('index')
+
+
+from .forms import SignupForm
+
 
 def signup(request):
-    # errors = list()
-    # if request.method == 'POST':
-    #     # exists를 사용해서 유저가 이미 존재하면 signup으로 다시 redirect
-    #     # 존재하지 않는 경우에만 아래 로직 실행
-    #     if not User.objects.filter(username=request.POST['username']).exists():
-    #         if request.POST['password1'] == request.POST['password2']:
-    #             username = request.POST['username']
-    #             password = request.POST['password1']
-    #             print(username)
-    #             print(password)
-    #             user = User.objects.create_user(username = username, password=password)
-    #             print('created user: ',user.username)
-    #             print('user_password: ',user.password)
-    #             user = authenticate(request, username=username, password=password)
-    #             print('authenticate', user)
-    #             if user is not None:
-    #                 print('로그인전',request.user.is_authenticated)
-    #                 login(request, user)
-    #                 print('로그인후',request.user.is_authenticated)
-    #                 return redirect('posts:post-list')
-    #             else:
-    #                 return redirect('members:login')
-    #         else:
-    #             print('입력한 비밀번호가 다름')
-    #             errors.append('입력한 비밀번호가 다름')
-    #             context = {
-    #                 'errors':errors,
-    #             }
-    #             messages.warning(request, ('입력한 비밀번호가 일치하지 않습니다.'))
-    #             return render(request, 'members/signup.html', context)
-    #     else:
-    #         print('유저가 이미 존재함')
-    #         # messages.warning(request, ('이미 존재하는 아이디입니다.'))
-    #         errors.append('유저가 이미 존재함')
-    #         context = {
-    #             'errors': errors,
-    #             'username': request.POST['username'],
-    #             'email':request.POST['email'],
-    #             'phone_no':request.POST['phone_no']
-    #         }
-    #
-    #         return render(request, 'members/signup.html', context)
-    # return render(request, 'members/signup.html')
+    if request.method == 'POST':
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.signup()
+            login(request, user)
+            return redirect('index')
+    else:
+        form = SignupForm()
+
+    context = {
+        'form': form,
+    }
+    return render(request, 'members/signup.html', context)
+
+
+def signup_bak(request):
     context = {
         'errors': [],
     }
     if request.method == 'POST':
+        # username, email, password, password2에 대해서
+        # 입력되지 않은 필드에 대한 오류를 추가
         username = request.POST['username']
-        email = request.POST['username']
+        email = request.POST['email']
         password = request.POST['password']
         password2 = request.POST['password2']
 
+        # 반드시 내용이 채워져야 하는 form의 필드 (위 변수명)
+        # hint: required_fields를 dict로
+        # required_fields = ['username', 'email', 'password', 'password2']
+        required_fields = {
+            'username': {
+                'verbose_name': '아이디',
+            },
+            'email': {
+                'verbose_name': '이메일',
+            },
+            'password': {
+                'verbose_name': '비밀번호',
+            },
+            'password2': {
+                'verbose_name': '비밀번호 확인',
+            },
+        }
+        for field_name in required_fields.keys():
+            if not locals()[field_name]:
+                context['errors'].append('{}을(를) 채워주세요'.format(
+                    required_fields[field_name]['verbose_name'],
+                ))
+
+
+        # 입력데이터 채워넣기
         context['username'] = username
         context['email'] = email
 
-        if password!=password2:
-            context['errors'].append('비밀번호가 다릅니다.')
-        if User.objects.filter(username=username).exists():
-            context['errors'].append('유저가 이미 존재함')
 
-        if context['errors']:
-            return render(request, 'members/signup.html', context)
 
-        User.objects.create_user(username=username, password=password)
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            print('로그인전',request.user.is_authenticated)
+        # errors가 없으면 유저 생성 루틴 실행
+        if not context['errors']:
+            user = User.objects.create_user(
+                username=username,
+                password=password,
+                email=email,
+            )
             login(request, user)
-            print('로그인후',request.user.is_authenticated)
-            return redirect('posts:post-list')
-        else:
-            return redirect('members:login')
-    return render(request, 'members/signup.html')
+            return redirect('index')
+    return render(request, 'members/signup.html', context)
