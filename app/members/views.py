@@ -52,7 +52,7 @@ from .forms import SignupForm
 
 def signup(request):
     if request.method == 'POST':
-        form = SignupForm(request.POST)
+        form = SignupForm(request.POST, request.FILES)
         if form.is_valid():
             user = form.signup()
             login(request, user)
@@ -118,3 +118,15 @@ def signup_bak(request):
             login(request, user)
             return redirect('index')
     return render(request, 'members/signup.html', context)
+
+def user_info(request, pk):
+    user = User.objects.get(pk=pk)
+    context = {
+        'user':user,
+    }
+    return render(request, 'members/user_info.html',context)
+
+def withdraw(request, pk):
+    user = User.objects.get(pk=pk)
+    user.delete()
+    return redirect('index')

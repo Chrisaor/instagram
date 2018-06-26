@@ -13,7 +13,7 @@
     <h1><a href="{% url 'index' %}">Instagram</a></h1>
     <div>
         {% if user.is_authenticated %}
-        <p> {{ user }}님이 로그인 되었습니다.
+        <p><a href="{% url 'members:user-info' user.id %}">{{ user }}</a>님이 로그인 되었습니다.
         <form action="{% url 'members:logout' %}" method="POST">
         {% csrf_token %}
         <button type="submit">로그아웃하기</button>

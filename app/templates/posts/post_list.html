@@ -2,13 +2,17 @@
 
 {% block content %}
 <h1>Post List</h1>
+    <a href="{% url 'posts:post-create' %}">
+        <button class="btn btn-primary">사진 업로드</button>
+    </a>
 {% for post in posts %}
-
 <div>
     <p>{{ post.author.username }}</p>
-    <p><a href="{% url 'posts:post-detail' post.id %}"><img src="{{ post.photo.url }}" alt="" width="100%"></a>
-
-    </p>
+        <p><a href="{% url 'posts:post-detail' post.id %}"><img src="{{ post.photo.url }}" alt="" width="60%"></a></p>
+    <form action="{% url 'posts:post-delete' post.id %}" method="POST">
+        {% csrf_token %}
+    <button class="btn btn-primary">삭제하기</button>
+    </form>
 </div>
 {% endfor %}
 {% endblock %}

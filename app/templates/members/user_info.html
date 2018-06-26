@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <ul>
+        <li>{{ user.username }}</li>
+        <li>{{ user.img_profile }}</li>
+    <li>{{ user.email }}</li>
+    <li>{{ user.introduce }}</li>
+    <li>{{ user.get_gender_display }}</li>
+    <li>{{ user.site }}</li>
+    </ul>
+    <form action="{% url 'members:withdraw' user.id %}" method="POST">
+    {% csrf_token %}
+    <button class="btn btn-primary">회원탈퇴</button>
+    </form>
+{% endblock %}

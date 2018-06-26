@@ -135,3 +135,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 # User-uploaded file을 접근할 URL접두어
 MEDIA_URL = '/media/'
+
+LOGIN_URL = '/members/'
