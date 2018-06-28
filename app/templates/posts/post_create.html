@@ -3,18 +3,19 @@
 {% block content %}
 <div>
     <form action="" method="POST" enctype="multipart/form-data">
-    {{ form.non_field_errors }}
         {% csrf_token %}
-        {% for field in form %}
-            <div class="form-group">
-
-            {{ field.label_tag }} {{ field }}
-            {{ field.errors }}
-                {% if field.help_text %}
-                <p>{{ field.help_text|safe }}</p>
-                {% endif %}
-            </div>
-        {% endfor %}
+        {{ form }}
+        {#    {{ form.non_field_errors }}#}
+{#        {% csrf_token %}#}
+{#        {% for field in form %}#}
+{#            <div class="form-group">#}
+{#            {{ field.label_tag }} {{ field }}#}
+{#            {{ field.errors }}#}
+{#                {% if field.help_text %}#}
+{#                <p>{{ field.help_text|safe }}</p>#}
+{#                {% endif %}#}
+{#            </div>#}
+{#        {% endfor %}#}
         <button type="submit" class="btn btn-primary btn-block">사진업로드</button>
     </form>
 </div>

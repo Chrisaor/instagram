@@ -8,6 +8,7 @@ User = get_user_model()
 
 
 def login_view(request):
+
     # 1. member.urls <- 'members/'로 include되도록 config.urls모듈에 추가
     # 2. path구현 (URL: '/members/login/')
     # 3. path와 이 view연결
@@ -29,8 +30,9 @@ def login_view(request):
             # 세션값을 만들어 DB에 저장하고, HTTP response의 Cookie에 해당값을 담아보내도록 하는
             # login()함수를 실행한다
             login(request, user)
-            print(request.user.is_authenticated)
-            # 이후 post-list로 redirect
+            next = request.GET.get('next')
+            if next:
+                return redirect(next)
             return redirect('posts:post-list')
         # 인증에 실패한 경우 (username또는 password가 틀린 경우)
         else:
@@ -39,6 +41,10 @@ def login_view(request):
     # GET 요청일 경우
     else:
         # form이 있는 template을 보여준다
+        # if request.GET['next']:
+        #     return redirect(request.GET['next'])
+        # print(request.GET['next'])
+
         return render(request, 'members/login.html')
 
 

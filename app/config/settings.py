@@ -16,7 +16,11 @@ import os
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 MEDIA_ROOT= os.path.join(BASE_DIR,'media')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+STATIC_DIR = os.path.join(BASE_DIR, 'static')
 
+STATICFILES_DIRS = [
+    STATIC_DIR,
+]
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.0/howto/deployment/checklist/
 
@@ -136,4 +140,4 @@ STATIC_URL = '/static/'
 # User-uploaded file을 접근할 URL접두어
 MEDIA_URL = '/media/'
 
-LOGIN_URL = '/members/'
+LOGIN_URL = 'members:login'
