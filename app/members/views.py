@@ -1,9 +1,11 @@
 from django.contrib.auth import authenticate, login, get_user_model, logout
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render, redirect
 
 # User클래스 자체를 가져올때는 get_user_model()
 # ForeignKey에 User모델을 지정할때는 settings.AUTH_USER_MODEL
+from members.models import Relation
+
 User = get_user_model()
 
 
@@ -125,14 +127,53 @@ def signup_bak(request):
             return redirect('index')
     return render(request, 'members/signup.html', context)
 
-def user_info(request, pk):
+def my_info(request, pk):
     user = User.objects.get(pk=pk)
     context = {
         'user':user,
     }
-    return render(request, 'members/user_info.html',context)
+    return render(request, 'members/my_info.html', context)
+
+def user_info(request, pk):
+    insta_user = User.objects.get(pk=pk)
+    context = {
+        'insta_user':insta_user,
+    }
+    return render(request, 'members/user_info.html', context)
 
 def withdraw(request, pk):
     user = User.objects.get(pk=pk)
     user.delete()
     return redirect('index')
+
+def follow_toggle(request, pk):
+    if request.method == 'POST':
+        to_user = User.objects.get(pk=pk)
+        try:
+            print('get and delete')
+            follow = Relation.objects.get(from_user=request.user, to_user=to_user)
+            follow.delete()
+
+        except :
+            print('create')
+            Relation.objects.create(from_user=request.user, to_user=to_user, relation_type='f')
+    return redirect(request.META['HTTP_REFERER'])
+
+def follower_list(request, pk):
+    insta_user = User.objects.get(pk=pk)
+    followers = insta_user.followers
+    context = {
+        'insta_user':insta_user,
+        'followers':followers,
+    }
+    return render(request, 'members/follower_list.html', context)
+
+def following_list(request, pk):
+    insta_user = User.objects.get(pk=pk)
+    followings = insta_user.following
+    context = {
+        'insta_user': insta_user,
+        'followings': followings,
+    }
+    print(context)
+    return render(request, 'members/following_list.html', context)

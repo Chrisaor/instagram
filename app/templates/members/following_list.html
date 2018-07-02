@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% block content %}
+    <h1>Following List</h1>
+
+    {% for following in followings %}
+
+        <form action="{% url 'members:follow' insta_user.id %}" method="POST"
+                  style="display: inline-block;">
+                {% csrf_token %}
+                {% if following in user.following %}
+                    <p>{{ following }}
+                        <button class="btn btn-primary">unfollow</button>
+                    </p>
+                {% else %}
+                    <p>{{ following }}
+                        <button class="btn btn-primary">follow</button>
+                    </p>
+                {% endif %}
+            </form>
+    {% endfor %}
+
+{% endblock %}

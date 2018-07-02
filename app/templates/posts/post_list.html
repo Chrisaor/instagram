@@ -1,24 +1,36 @@
 {% extends 'base.html' %}
 
 {% block content %}
-
     <div class="">
         <a href="{% url 'posts:post-create' %}">
             <button class="btn btn-primary">사진 업로드</button>
         </a>
     </div>
+
     <br>
     {% for post in posts %}
+
         <div class="card border-dark mb-3 mx-auto" style="max-width: 600px;">
             <div class="card-header">
                 {% if post.author.img_profile %}
                     <img class="rounded-circle" src="{{ post.author.img_profile.url }}" alt="" width="40" height="40">
-                    {{ post.author.username }}
                 {% else %}
                     {% load static %}
                     <img class="rounded-circle" src="{% static "images/blank_user.png" %}" alt="" width="40"
                          height="40">
-                    {{ post.author.username }}
+                {% endif %}
+                <a href="{% url 'members:user-info' post.author_id %}">{{ post.author.username }}</a>
+                {# follow 기능 #}
+                {% if not user == post.author %}
+                    <form action="{% url 'members:follow' post.author_id %}" method="POST"
+                          style="display: inline-block;">
+                        {% csrf_token %}
+                        {% if post.author in following %}
+                            <button class="btn btn-primary">unfollow</button>
+                        {% else %}
+                            <button class="btn btn-primary">follow</button>
+                        {% endif %}
+                    </form>
                 {% endif %}
                 <div class="float-right">{% if post.author == user %}
                     <form action="{% url 'posts:post-delete' post.id %}" method="POST">
@@ -31,18 +43,22 @@
                 <a href="{% url 'posts:post-detail' post.id %}"><img src="{{ post.photo.url }}" alt=""
                                                                      class="card-img-top" width="500" height="500"></a>
             </div>
-        <div class="mx-sm-4"><strong>{{ post.postlike_set.all|length }} likes</strong>
-            <form action="{% url 'posts:post-like' post.id %}" method="POST">
-                {% csrf_token %}
-                <button class="btn btn-primary btn-sm">좋아요 누르기</button>
-            </form>
-        </div>
+            <div class="mx-sm-4"><strong>{{ post.postlike_set.all|length }} likes</strong>
+                <form action="{% url 'posts:post-like' post.id %}" method="POST">
+                    {% csrf_token %}
+                    {% if user in post.like_users %}
+                        <button class="btn btn-primary btn-sm">좋아요 취소</button>
+                    {% else %}
+                        <button class="btn btn-primary btn-sm" value="{{ post.id }}">좋아요</button>
+                    {% endif %}
+                </form>
+            </div>
             <div class="mx-sm-4">
                 <p><strong>{{ post.author }}</strong> {{ post.content }}</p></div>
             <div class="mx-sm-4">
                 {% for comment in post.comments.all %}
-                <p><strong>{{ comment.user }}</strong> {{ comment.comment }}</p>
-            {% endfor %}</div>
+                    <p><strong>{{ comment.user }}</strong> {{ comment.comment }}</p>
+                {% endfor %}</div>
             <form action="{% url 'posts:comment-create' post.id %}" method="POST">
                 {% csrf_token %}
                 <div class="mx-sm-4 form-row mb-4">
@@ -54,7 +70,6 @@
                     </div>
                 </div>
             </form>
-
         </div>
     {% endfor %}
 {% endblock %}
